@@ -205,6 +205,42 @@ Planned UX-03/07/10/11 checks cover these controls, two-step partial failure, ca
 
 Next: after AY1 commits the consolidated API, compare only these affected shapes/examples against the exact new SHA and return the final Aligned/Exception/Pending delta to AY. No new strategy, API schema or product revision is introduced here. ₦0, synthetic-only, coding HOLD and production HOLD retained.
 
+
+### 1.6 Final consumer reconciliation — API V0.2 — 8 November 2026, 14:13 WAT
+
+Current authoritative API: [Consolidated Backend/API Contract V0.2](https://github.com/Jnasak/jca-salvi-bos/blob/8075b3e0e6132b5b56a090bc17911725e3e48996/docs/backend/r1a-enq-01-api-contract-v0.2.md), exact commit 8075b3e0e6132b5b56a090bc17911725e3e48996.
+Compared against Product V1.0 b37c6035a15381f77a56c103038baa773cede892, V1.0.1 c11023032dbda84de801cb44bf50320fe4ab98c4, V1.0.2 9aba09481f0769ddf99a5bbfd79749ec211ac9d7 and accepted S1 13cf6e9afe23605a9d71347982b67bc7b7235e16. Frontend prior checkpoint b3b29e6f09911c8149c2c6e08973e40d3041d1b1.
+This is the current consumer disposition and supersedes earlier API-delivery, consolidation, EX/FEX and validation pending findings above or in the historical readiness summary where V0.2 resolves them. Prior checkpoints remain traceability, not current blockers.
+
+| Requested consumer area | Disposition | Exact V0.2 sources / frontend acceptance |
+| --- | --- | --- |
+| Completion versus cancellation | Aligned | Sections 8, 9.1, 12.1. FollowUp supports open/completed/cancelled with mutually exclusive completion and cancellation metadata. Complete requires factual outcome 3–1000; Cancel requires reason 3–500. Distinct labelled controls; actor/time server-owned. Section 9.1's specific follow-up success envelope data:{lead,follow_up} extends section 8's generic data:{lead}; consume the affected historical action even after active_follow_up=null |
+| Replacement/reschedule/partial failure | Aligned | Sections 8, 9.2, 12.2. Cancel then create new ID, separate keys/revisions/events; creation uses latest returned lead revision. If cancellation succeeds but creation fails, show cancellation truthfully, retain safe new draft and planning state; retry only failed creation with same key/body. Same-ID reschedule changes date, retains purpose/owner/history. No hard delete, action reopen or combined replacement |
+| FEX-01 principal source | Aligned — exception closed at contract level | Section 8.1 and its JSON example incorporate S1 with current product ownership rules. Lead/purpose/revision-bound eligible principals; empty list disables selector; clear-owner separate from principal choices. Follow-up owner equals named lead owner. No hardcoded IDs, public/general directory or use of lead-specific endpoint to populate FE-05 global filters |
+| FEX-02 transition metadata | Aligned — exception closed at contract level | Section 8.2 and metadata JSON: consume allowed targets, required_fields and declarative constraints only when record_revision matches lead.revision. Allowlisted same-origin routes; blocked terminal/deassignment choices omitted. Metadata never grants permission; server revalidates each mutation. Unknown/unsafe/mixed-revision metadata must not enable an action |
+| Mandatory reasons / validation | Aligned | Sections 4, 8.2, 9, 9.3 and 12.2. assigned→in_progress now explicitly requires reason. Reasons 3–500, qualification rationale/completion outcome 3–1000; trim/NFC then Unicode code points, no silent truncation. Phone accepts only the specified optional leading plus, ASCII digits and separators; no country/reachability inference. Description newline treatment is explicit. Earlier S1 no-reason text is superseded |
+| WAT dates / ownership / safe errors | Aligned | Sections 6, 8.1/8.2, 9.2/9.3, 12.2/12.3. Server WAT today-or-future create/reschedule; invalid/past date→422 due_date field error; existing overdue actions retained. Open action blocks terminal transition/deassignment and incompatible reassignment→409. 401/403 clear/deny protected views; 404 non-enumerating. Safe errors retain recoverable input without exposing protected data |
+| Wire version / receipt / final examples | Aligned | Document revision V0.2 is distinct from wire identifier r1a-enq-api-v0.1 (sections 2–6/12). Requests, config, response guards and mocks use this IDENTICAL wire string; do not invent r1a-enq-api-v0.2. Public success only after supported 200/201 persistence-confirmed receipt. Use V0.2 examples, not historical combined-disposition proposals |
+| Remaining independent gates | Pending — not a consumer mismatch | P-01–P-04; AY/security disposition of auth integration, abuse and attempt/operation lifetime parameters; branch governance, authorised zero-cost environment, AY freeze and explicit Release to Code. Real/public data enablement, runtime acceptance and business release remain separate |
+
+EX-01/EX-02/EX-03: CLOSED at product/API contract-reconciliation level. Product validation boundaries incorporated. FEX-01/FEX-02: CLOSED at consumer contract level, not implemented/runtime-verified.
+FEX-03 affected mutation/error examples: sufficient for the requested final consumer review through sections 8.1/8.2 and 12.1–12.3. Remaining illustrative config/list/session examples can be derived after clearance from explicit section 3/8 schemas; no competing schema or additional broad planning gate requested.
+
+FE-06 agreed UI behaviour: separate Complete, Cancel, Replace and Reschedule controls; mandatory labelled outcome/reason/date fields per operation; clear history/status distinctions; no completion assertion fabricated by the interface. After explicit completion/cancellation, refresh lead revision and permitted actions before a separately confirmed parent transition. Terminal transition remains blocked while open action exists; unsupported combined disposition is rejected, never processed. Replacement partial failure is visible and does not erase truthful cancelled history.
+
+Keyboard/error acceptance remains UX-03/07/10/11: reachable distinct controls; deliberate focus into action form/dialog and return to trigger/meaningful result; linked field errors and announced pending/success/failure; preserve safe input on conflict, refresh authorised state/options and require deliberate reconciliation. Empty selectors, missing permissions and stale metadata have explicit non-interactive/denied states. UI, tests and mocks are not yet built.
+
+Final frontend acceptance examples to implement/test after clearance:
+1. Section 12.1 cancel at revision 8→9 shows cancelled action and no active follow-up; separate close with new key/revision 9→10. Complete is an alternative with required actual-work outcome, never fresh completion of cancelled action.
+2. Section 12.2 cancel-success/create-failure shows partial result and needs planning; retry only create using its original logical operation key.
+3. Section 12.2 date boundary at 23:00Z uses next WAT date: prior date 422, today accepted; preserve existing overdue history.
+4. Section 8.2 assigned→in_progress requires reason; malformed/short reason 422 with focus; stale revision 409 retains draft; membership loss denied without private data.
+5. Section 8.1 empty/revoked/out-of-scope selector never falls back to guessed identity; stale action_metadata never enables a transition.
+6. Sections 5/12.3 receipt replay/unknown/expiry remain truthful; no automatic new submission identity after uncertain outcome.
+
+AAY1 final consumer sign-off: PASS WITH CONTROLS — API V0.2 is consumable against the accepted frontend matrix with NO demonstrated unresolved material cross-contract incompatibility in the requested review scope. Recommend AY contract freeze against the exact pinned references above. This is a static specification acceptance only; AY retains final freeze and Gate 0 authority.
+No application code, mock execution, runtime/accessibility test, database operation or deployment performed. All planned examples remain NOT EXECUTED. ₦0/synthetic-only boundary retained; coding and production remain HOLD until the respective explicit authorisations.
+
 ## 2. Component backlog and implementation order
 
 Routes below are semantic views, not independently assigned URL paths. UX specification is retained rather than redesigned.
