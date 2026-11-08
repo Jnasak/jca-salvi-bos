@@ -178,6 +178,33 @@ FE-06 and UX-03/10/11 now have aligned reopen/owner-clear outcomes and error exa
 
 Final consumer review of API 7271b4b: completed with bounded exceptions. Contract freeze remains Pending EX-02/03, FEX-01/02, validation and AY disposition; public/data enablement approvals remain separately tracked. Branch governance, authorised zero-cost environment and explicit RELEASE TO CODE remain independent Gate 0 conditions. All runtime/rendered tests NOT EXECUTED; production HOLD, synthetic-only and zero-expenditure controls retained.
 
+
+### 1.5 Product V1.0.2 / S1 alignment checkpoint — 8 November 2026, 14:05 WAT
+
+Changed dispositions only. Governing new sources:
+- [JJSA Product V1.0.2](https://github.com/Jnasak/jca-salvi-bos/blob/9aba09481f0769ddf99a5bbfd79749ec211ac9d7/docs/product/r1a-enq-01-follow-up-and-validation-amendment-v1.0.2.md), full SHA 9aba09481f0769ddf99a5bbfd79749ec211ac9d7; supplements V1.0 b37c603 and V1.0.1 c110230.
+- [AY1 Supplement S1](https://github.com/Jnasak/jca-salvi-bos/blob/13cf6e9afe23605a9d71347982b67bc7b7235e16/docs/backend/r1a-enq-01-api-v0.1.2-integration-supplement-s1.md), full SHA 13cf6e9afe23605a9d71347982b67bc7b7235e16; used with API V0.1.2 at 7271b4b.
+- AY's Contract Resolution Review, 8 November: product decisions accepted; S1 designs accepted with consolidation controls; no Gate 0 clearance.
+Backend branch observed at 13cf6e9: consolidated API adopting V1.0.2 not yet present. This is a readiness checkpoint, NOT final consumer sign-off on an undelivered revision.
+
+| Affected classification | Updated disposition / specific consumer expectation |
+| --- | --- |
+| EX-01 | Closed; unchanged |
+| EX-02 | Closed at product level; API alignment Pending. Follow-up open→completed only for performed action with outcome 3–1000 code points; open→cancelled for unperformed action with reason 3–500. Separate server-derived actor/time/audit; no combined parent closure/disposition |
+| EX-03 | Closed at product level; API alignment Pending. Replacement = explicit cancel then new create with fresh ID. Reschedule changes date only, same ID, reason/audit. No hard delete. New/rescheduled WAT date today-or-future; existing overdue dates preserved |
+| Validation | Product boundaries confirmed; no new JJSA decision requested. Consume NFC then code-point counts, approved phone separators and mandatory reason/outcome limits from V1.0.2 section 3. AY1 must remove stale provisional/past-date/optional-outcome wording from authoritative API |
+| FEX-01 | Aligned to accepted S1 design; consolidation Pending. S1 section 2 gives lead/purpose-specific assignable-principals endpoint with revision, can_clear_owner, eligibility and empty-list semantics. FE-06 never guesses IDs; endpoint is NOT a general directory. FE-05 filters use independently authorised list-derived choices/current-view or unassigned scope, not arbitrary selector calls |
+| FEX-02 | Aligned design; one stale input rule to update. S1 section 3 gives revision-bound action_metadata, permitted targets, constraints and explicit deassignment. Metadata revision must match lead; allowlisted same-origin paths only; mutation rechecks authority. V1.0.2 section 3 now requires status-transition reasons, so S1 assigned→in_progress required_fields=none/no-reason text must be updated in consolidation (not sent back for product redesign) |
+| Final API consumer alignment | Pending AY1 consolidated update with cancel endpoint/state, completion/cancellation fields, today-or-future validation, replacement examples, S1 metadata and corrected required reasons. Old active_follow_up_disposition shape must not remain authoritative |
+| P-01–P-04 / Gate 0 | Separately tracked; no policy approval, contract freeze or Release to Code inferred |
+
+FE-06 preparation delta, not built UI: explicit Complete (record actual outcome) and Cancel (record factual reason) controls with distinct labels; Replace prompts cancellation then creation as two revisioned operations; Reschedule retains action identity/purpose. After successful cancel, if new creation fails, show truthful cancelled history plus needs-follow-up-planning state, retain safe new-action draft and never report replacement success. Re-fetch record/revision between dependent operations; never reuse an old expected_revision.
+Terminal transition and owner-clear remain blocked while an open action exists; disposition is never an implicit side effect. Reassignment must not orphan or silently change action ownership.
+Forms use labelled outcome/reason/date inputs, linked field errors, announced mutation state and deliberate focus placement. On stale metadata/conflict retain safe input and refresh permitted actions; empty selector/blocked action states remain explicit.
+Planned UX-03/07/10/11 checks cover these controls, two-step partial failure, cancellation versus completion, WAT date rejection and concurrent mutation. All NOT EXECUTED. FE-01–08 scope and other UX criteria remain unchanged.
+
+Next: after AY1 commits the consolidated API, compare only these affected shapes/examples against the exact new SHA and return the final Aligned/Exception/Pending delta to AY. No new strategy, API schema or product revision is introduced here. ₦0, synthetic-only, coding HOLD and production HOLD retained.
+
 ## 2. Component backlog and implementation order
 
 Routes below are semantic views, not independently assigned URL paths. UX specification is retained rather than redesigned.
