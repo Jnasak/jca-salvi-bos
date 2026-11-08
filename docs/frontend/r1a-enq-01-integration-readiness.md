@@ -126,6 +126,32 @@ UX-01–UX-11 coverage remains unchanged; API-01–10 and ENQ-T01–13 provide a
 
 Disposition: product + API delivery blockers closed. Cross-contract static review completed with the exceptions above; NOT a frozen contract. Next: JJSA versioned semantic correction, AY1 bounded contract/example revision, then AY cross-contract ruling. Branch governance/local environment and explicit Release to Code remain separate conditions. No application implementation or deployment is included.
 
+
+### 1.3 V1.0.1 status correction reconciliation — 8 November 2026, 13:49 WAT
+
+Product correction: [JJSA V1.0.1](https://github.com/Jnasak/jca-salvi-bos/blob/c11023032dbda84de801cb44bf50320fe4ab98c4/docs/product/r1a-enq-01-status-reopen-amendment-v1.0.1.md), commit c11023032dbda84de801cb44bf50320fe4ab98c4. It supersedes only the conflicting V1.0 reopen/ownership statements; other product rules and reduced scope remain unchanged.
+Latest API reviewed: [AY1 contract at 058cee8](https://github.com/Jnasak/jca-salvi-bos/blob/058cee8b907d6fd17fa4f5b94876177e0f0628f8/docs/backend/r1a-enq-01-api-contract-v0.1.md), change log V0.1.1, sections 9 and 12.1. The filename/header still identify V0.1; pin the SHA, not filename alone. This revision references AY's recommended correction but still awaits JJSA's amendment. It does not yet incorporate c110230.
+
+| Affected area | Classification | Frontend reconciliation / owner action |
+| --- | --- | --- |
+| EX-01 reopening contradiction | Resolved at product-specification level | Product V1.0.1 sections 1/4 give deterministic destinations. Do not classify it as an unresolved JJSA contradiction or invent a different rule |
+| Status/qualification | Aligned to corrected product; API/P-04 Pending | Operational and qualification fields stay separate. No effect on category choices, report definitions or scope. AY1 must replace the old transition text and amendment-pending wording |
+| Owned terminal reopen | Aligned product behaviour | resolved/closed with named owner → in_progress; retain owner. Require reason, expected revision and authorised actor; one atomic state/audit mutation |
+| Unassigned terminal reopen | Aligned product behaviour; defensive case explicit | closed + unassigned → new. resolved + unassigned → new only for pre-existing legacy/inconsistent records; never expose this as permission to create a normally unowned resolved case |
+| Owner clearing | Aligned product behaviour; API Pending | Reject direct terminal owner clear. Owned terminal case must reopen first, then explicitly deassign in a separately audited/revisioned action. Open assigned/in_progress deassignment atomically clears owner and returns to new |
+| Follow-up consistency | Invariant aligned; EX-02/03 partially Pending | No active open follow-up on terminal record; no orphan action from deassignment. Reopening creates no action/due date and never revives completed work. Exact completion/cancellation/reassignment payload/permissions and replacement rules still need the bounded JJSA/AY1 contract |
+| Concurrency and denied actions | Aligned requirement; examples Pending | Missing/blank reason, missing/stale revision and unauthorised action reject without mutation. Retain safe input on conflict. AY1 supplies examples tied to c110230 and differentiates duplicate operation replay from competing fresh requests |
+| Reporting/queue | Aligned; no definition change | Reopened owned case with no next action → needs_follow_up_planning; unassigned new → triage. Consume committed-state server aggregates; do not invent overdue action on reopen |
+| FEX-01/02 | Pending | Authorised selector principal source and authoritative permitted-target/input contract still required from AY1; corrected product table supplies semantic basis but does not grant permissions |
+| FEX-03 examples | Partially addressed | API 058cee8 section 12.1 now supplies replay, expiry, rate limit, 401/403, stale conflict, uncertain response and mutation-body examples. Close the earlier missing-state-table finding for these examples only. Config/list/detail/session and full successful mutation fixtures, plus corrected reopen/deassignment outcomes, still need completion/ratification |
+
+Proposed future verification (NOT EXECUTED): use V1.0.1 section 5 cases for four owned/unassigned terminal combinations, legacy recovery, missing reason/revision, stale/conflicting and unauthorised attempts, rejected terminal clearing, follow-up-blocked deassignment, concurrent reopen and no automatic follow-up creation. Extend existing SYN-08/09/10 and UX-10/11 coverage; no new interface scope or independent schema.
+
+Approval gates retained: P-01 public categories Pending; P-02 actual approved notice/version and relevant retention controls Pending (AY's D1–D3 governance acceptance with controls preserved); P-03 precise permissions Pending; P-04 business-policy approval Pending. Product-level correction is not principal approval, API adoption or runtime evidence.
+
+Next handback: AY1 updates the versioned API against c110230 with success, invalid-input, revision-conflict, disallowed-action and unauthorised examples, and resolves selector/action metadata gaps; AAY1 then records exact aligned references. AY cross-contract compatibility ruling remains separate from branch governance, environment validation and Release to Code.
+No application code, tests, deployment or production release is authorised or claimed.
+
 ## 2. Component backlog and implementation order
 
 Routes below are semantic views, not independently assigned URL paths. UX specification is retained rather than redesigned.
