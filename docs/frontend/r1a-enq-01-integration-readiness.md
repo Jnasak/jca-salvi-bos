@@ -43,6 +43,36 @@ No existing API/type/schema is present in the inspected baseline. All wire names
 
 Contract freeze evidence: shared artifact path/version, owner review, approved examples and AY disposition. This table is an integration checklist, not a jointly signed API agreement.
 
+
+### 1.1 Owner-contract reconciliation — 8 November 2026, 13:33 WAT
+
+Product reference: [JJSA Product Behaviour and Acceptance Contract V1.0](https://github.com/Jnasak/jca-salvi-bos/blob/b37c6035a15381f77a56c103038baa773cede892/docs/product/r1a-enq-01-product-contract-v1.0.md), commit b37c6035a15381f77a56c103038baa773cede892, branch docs/r1a-enq-product-contract.
+API reference: Pending receipt. The inspected backend branch remains at 300cc7faa372a20ba3b3adfe282891aa73886ecc and contains README.md and .gitignore only.
+
+Labels below assess product-to-frontend compatibility only; Aligned does not mean approved for code, jointly API-reconciled, implemented or tested. V1.0 thresholds are JJSA proposals for reconciliation. Prior matrix rows retain their historical V0.1 basis; this subsection records the newer product decisions and exceptions.
+
+| Contract area | Classification | Reconciliation and remaining owner action |
+| --- | --- | --- |
+| Fields | Aligned — product level; API Pending | V1.0 section 2 supplies seven logical keys, labels, requiredness and proposed limits. Frontend can consume one category, optional organisation and affirmative acknowledgement. AY1 must map shared wire schema/errors; JJSA/AY1 must clarify Unicode normalisation/counting and accepted phone separators before boundary tests freeze |
+| Categories | Pending — public enablement blocker | V1.0 section 3 permits only synthetic general_enquiry for mock/testing until principal approval. Use configurable active list and stored label-at-submission; do not present synthetic label as approved public taxonomy. P-01: JCA/Salvi; AY1 list schema Pending |
+| Public request | Aligned — product boundary; API Pending | V1.0 sections 2/8: public fields only; owner/status/source/notice version server-owned. AY1 endpoint, schema version, request identity and error contract Pending |
+| Confirmed receipt | Aligned — product level; API Pending | V1.0 section 8: persistence-confirmed, non-authorising public reference, received time and generic wording only. Do not expose full CRM ID. AY1 exact discriminator/receipt schema Pending |
+| Validation/rejection | Aligned — product intent; API Pending | V1.0 section 2 supplies field copy and limits; consume field-key errors. Threshold/normalisation agreement and technical error envelope Pending |
+| Duplicate/unknown outcome | Aligned — product level; API Pending | V1.0 section 8 matches at-most-one logical request and same receipt replay; retain uncertain state. AY1 TTL, changed-payload response, recovery and safe retry rules Pending |
+| Auth/session | Pending | Separate accounts and private internal workspace align. V1.0 section 4/P-03 still requires ratified access matrix and session treatment; AY/AY1 auth/expiry/forbidden contract Pending |
+| Assignment | Aligned — product level; permission/API Pending | V1.0 section 4: initial unassigned, no public owner control; authorised principal assignment/reassignment audited. Final shared access ratification P-03 and allowed-action payload Pending |
+| Follow-up | Aligned — product level; API Pending | V1.0 section 6: separate linked action, at most one active next action, required owner/summary/WAT date; overdue strictly before today. Reschedule/completion audited. AY1 serialization, mutation and close/complete transaction contract Pending |
+| Status/qualification | Exception — AY compatibility ruling required | V1.0 section 5 refines historic V0.1 labels into operational new/assigned/in_progress/resolved/closed plus separate unassessed/qualified/not_qualified/hold. Follow-up is derived; Converted/project creation deferred. Frontend must not silently retain old labels as enum values. P-04 business-rule disposition and AY ruling required before dependent schema/UI freeze |
+| Concurrent edits | Aligned — product level; API Pending | V1.0 section 4 rejects stale revisions, matching retained-input reconciliation. AY1 revision token and conflict/error payload Pending |
+| Reporting | Aligned — product level; API Pending | V1.0 section 7 distinguishes distinct enquiry counts from open action counts, new_today from as-of queue totals, resolved from closed. Server as_of/timezone/scope required; no UI-authoritative totals. AY1 exact payload/date-cutoff examples Pending |
+| Privacy/abuse | Pending — real/public-data blocker | V1.0 P-02 notice/retention/processing approval and AY technical controls outstanding. Notice version is server-owned. Rate-limit/anti-abuse and error/recovery responses Pending AY1 |
+| Notifications | Aligned — product boundary; API Pending | V1.0 section 8 permits dashboard indication; external delivery is not a persistence or release prerequisite. AY1 durable queue/freshness/recovery payload Pending |
+
+Additional bounded exception: V1.0 section 5 allows reopening resolved records, but its explicit transition list only includes resolved→in_progress while the general reopening rule allows unowned records to return to new. JJSA/AY1 should resolve the resolved-without-owner case and the atomic owner-clear/status-reset contract rather than derive contradictory client rules.
+
+Classification: partial product/frontend reconciliation completed; joint product/API/frontend contract freeze NOT COMPLETE.
+Next owner handback: AY1 versioned API contract referencing this exact product SHA, including examples for field errors, category activation, receipt replay, uncertain outcome, auth expiry, stale update, status/qualification, follow-up closure and reporting. JJSA resolves P-04 and bounded semantic exceptions; AY rules on compatibility. P-01/P-02/P-03 remain separately owned approvals, not reopened DEC-12 scope.
+
 ## 2. Component backlog and implementation order
 
 Routes below are semantic views, not independently assigned URL paths. UX specification is retained rather than redesigned.
