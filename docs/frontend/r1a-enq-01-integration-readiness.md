@@ -152,6 +152,32 @@ Approval gates retained: P-01 public categories Pending; P-02 actual approved no
 Next handback: AY1 updates the versioned API against c110230 with success, invalid-input, revision-conflict, disallowed-action and unauthorised examples, and resolves selector/action metadata gaps; AAY1 then records exact aligned references. AY cross-contract compatibility ruling remains separate from branch governance, environment validation and Release to Code.
 No application code, tests, deployment or production release is authorised or claimed.
 
+
+### 1.4 API V0.1.2 consumer delta — 8 November 2026, 13:56 WAT
+
+Exact API reference: [V0.1.2 at 7271b4b](https://github.com/Jnasak/jca-salvi-bos/blob/7271b4bc027af4683aaff07ce1771384659a5d85/docs/backend/r1a-enq-01-api-contract-v0.1.md), full SHA 7271b4bc027af4683aaff07ce1771384659a5d85. Compared against JJSA V1.0 b37c603, correction V1.0.1 c110230 and frontend reconciliation 1917dd5. This delta supersedes 1.3's API-adoption-pending finding. Unchanged classifications in 1.2 remain applicable.
+
+AY's current cross-contract ruling: compatibility accepted in principle with controls, final freeze Pending. EX-01 CLOSED at product AND API specification levels; no further JJSA reconsideration requested.
+
+| Changed / retained item | Disposition | Evidence and frontend consequence |
+| --- | --- | --- |
+| EX-01 product/API consistency | Aligned — Closed | API section 9 adopts c110230: owned terminal→in_progress, unassigned closed→new, unassigned resolved→new for legacy recovery only; terminal clearing prohibited, open deassignment atomic. Matches product and accepted UX behaviour |
+| Reopen/deassignment response examples | Aligned documentation | API section 12.2 supplies full successful mutation envelope, replay behaviour, 422 field validation, 409 stale revision/illegal transition and 403 denied action. Map successful lead revision/owner/status; retain edits for 409, linked reason errors for 422, remove protected display on auth loss |
+| Revision distinction | Aligned | Section 12.2: missing/invalid expected_revision→422; present stale→409. Do not treat all revision errors as a refresh conflict. Fresh competing keys versus identical-key replay remain distinct |
+| FEX-03 mutation-example gap | Partially closed | Full reopen success envelope and corresponding negative examples now supplied. Preserve only remaining config/list/detail/session fixture gaps previously identified; no claim of executed mock tests |
+| EX-02/03 | Exception — Pending JJSA | Completion versus cancellation, replacement/removal and past-date rules not frozen. Apply AY interim safety ruling below; API proposed atomic-complete payload is NOT accepted by frontend as a resolved business disposition |
+| FEX-01 | Pending AY1 | Approved assignable-principal source absent from reviewed API revision; do not infer/hardcode UUIDs |
+| FEX-02 | Pending AY1 | Action names still do not supply authoritative permitted targets/conditional inputs. Need metadata or exact frozen referenced matrix with server enforcement |
+| Validation boundaries | Pending JJSA/AY1 | NFC/code points, telephone separators and reason/rationale limits need final compatibility disposition; no frontend-only alternate limits |
+| P-01–P-04 | Pending appropriate owners | No closure inferred from API delivery or technical compatibility; prior governance approvals with controls retained |
+
+AY interim safety ruling takes precedence over the provisional section 9/12.1 active_follow_up_disposition complete example: while EX-02/03 remain unresolved, reject a terminal transition involving any unresolved open follow-up. No close action may silently complete/cancel/delete it. Completion represents work actually performed and must be an explicit approved operation. In FE-06 explain the blocking action, preserve unsaved safe input, and consume the agreed server conflict response; no client bypass or automatic completion.
+Open deassignment also rejects an unresolved active follow-up under section 9. Reopening creates no task, due date or overdue indication.
+
+FE-06 and UX-03/10/11 now have aligned reopen/owner-clear outcomes and error examples. FE-01–08 scope and UX-01–11 coverage are unchanged. No new strategy or API schema is introduced.
+
+Final consumer review of API 7271b4b: completed with bounded exceptions. Contract freeze remains Pending EX-02/03, FEX-01/02, validation and AY disposition; public/data enablement approvals remain separately tracked. Branch governance, authorised zero-cost environment and explicit RELEASE TO CODE remain independent Gate 0 conditions. All runtime/rendered tests NOT EXECUTED; production HOLD, synthetic-only and zero-expenditure controls retained.
+
 ## 2. Component backlog and implementation order
 
 Routes below are semantic views, not independently assigned URL paths. UX specification is retained rather than redesigned.
