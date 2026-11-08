@@ -1,4 +1,4 @@
-# R1A-ENQ-01 — Shared Backend/API Contract V0.1
+# R1A-ENQ-01 — Shared Backend/API Contract V0.1.1
 
 Date: 8 November 2026 (WAT)
 Owner: AY1 — Technical Implementation & Integration
@@ -9,14 +9,14 @@ Parent source-control baseline: 300cc7faa372a20ba3b3adfe282891aa73886ecc.
 ## 1. Exact governing references and precedence
 
 - Product: docs/product/r1a-enq-01-product-contract-v1.0.md at b37c6035a15381f77a56c103038baa773cede892, on docs/r1a-enq-product-contract.
-- Frontend consumer matrix: docs/frontend/r1a-enq-01-integration-readiness.md, Section 1, at e44e3d690c82cbf5d371931e92347241dc7849ec.
+- Frontend consumer matrix: docs/frontend/r1a-enq-01-integration-readiness.md, Section 1, at e44e3d690c82cbf5d371931e92347241dc7849ec; product reconciliation update Section 1.1 at 79a752e51de62e3d1e7c57863dada6102023ae5f.
 - PRD V1.3-R1, R1A-ENQ-01 V0.1 and DEC-12 retain parent scope/traceability.
 - Approved platform: Next.js, TypeScript, Vercel, Supabase Auth and PostgreSQL; separate principal identities.
 - Public source contains documentation and synthetic examples only. No migrations, executable schemas, application code, real records or credentials are introduced here.
 
 JJSA V1.0 is now received: it replaces earlier missing-contract findings. Its detailed rules are specified for reconciliation, with P-01 through P-04 approval dependencies preserved. AY1 owns proposed wire names, HTTP semantics and implementation contracts. AY retains final compatibility/security ruling and explicit G-00 Release to Code.
 
-All engineering choices below are proposed V0.1 until AY rules. No unrelated services, portal, finance, project conversion or external messaging are added.
+All engineering choices below are proposed V0.1.1 until AY rules. No unrelated services, portal, finance, project conversion or external messaging are added.
 
 ## 2. Shared wire conventions
 
@@ -33,7 +33,7 @@ All engineering choices below are proposed V0.1 until AY rules. No unrelated ser
 
 Proposed GET /api/enquiry-config returns approved active category metadata, field constraints, approved notice display/version and a fresh opaque signed submission-attempt token plus expires_at. It is no-store and subject to abuse limits. It reads no private CRM records.
 
-The signed token carries random attempt identity, expiry, contract version and notice version; no customer content. Token signing keys remain server-only. Its TTL is an AY-owned configuration parameter, NOT a hardcoded business-retention decision. A production-enabled runtime must not issue attempts while TTL, notice, category or abuse configuration lacks required approval. GET config failure must leave the form unavailable, not silently use a fixture category.
+The signed token carries random attempt identity, expiry, contract version and notice version; no customer content. Token signing keys remain server-only. Proposed lifetime: 24 hours from server issuance, with expiry exclusive (now >= expires_at is expired). Replay is permitted only while the attempt token is valid. Proposed mapping/digest retention: 48 hours after issuance, then purge under the approved retention policy; this does not set lead or audit retention. These are explicit engineering recommendations pending AY/P-02 ratification, NOT approved business-retention values. A production-enabled runtime must not issue attempts while TTL, notice, category or abuse configuration lacks required approval. GET config failure must leave the form unavailable, not silently use a fixture category.
 
 AAY1 holds the token and draft values in memory for the logical attempt, not browser persistent storage. Re-rendering never silently replaces an attempt after submission has started. Explicitly beginning a different enquiry obtains a new token.
 
@@ -222,9 +222,10 @@ Operational enum: new, assigned, in_progress, resolved, closed.
 Qualification enum: unassessed, qualified, not_qualified, hold.
 These are JJSA V1.0 semantics pending P-04/AY compatibility ruling; do not use historic overloaded labels as interchangeable enums.
 
-Transitions: new→assigned/closed; assigned→in_progress/closed; in_progress→resolved/closed; resolved→in_progress; closed→in_progress if owned, otherwise new. Assignment new→assigned is atomic with owner change. Reassignment while assigned/in_progress preserves operational status. Clearing owner while open returns to new with reason. Assignment of terminal records is rejected until reopened.
+V1.0 transition list (not frozen; EX-01 supersedes the proposed resolved invariant): new→assigned/closed; assigned→in_progress/closed; in_progress→resolved/closed; resolved→in_progress; closed→in_progress if owned, otherwise new. Assignment new→assigned is atomic with owner change. Reassignment while assigned/in_progress preserves operational status. Clearing owner while open returns to new with reason. Assignment of terminal records is rejected until reopened.
 
-JJSA ambiguity EX-01: resolved→in_progress requires owner, but resolution may preserve null owner only if upstream rules allow it. Proposed invariant: resolved always retains its existing non-null owner; closed may be unassigned. JJSA/AY must confirm, not silently extend allowed transitions.
+Status exception EX-01 — AY compatibility ruling received on 8 November 2026: separation of operational status/qualification is technically compatible with DEC-12, subject to bounded JJSA correction and P-04 business approval. AY recommends resolved or closed → in_progress when owned, and → new when unassigned. This supersedes AY1's earlier suggestion to require owner retention on all resolved records. It is a recommended correction awaiting JJSA's versioned amendment, not an approved extension to V1.0. The V1.0 resolved→in_progress-only list remains a documented contradiction; do not implement either interpretation until reconciled. JJSA must also specify when a resolved record may lose ownership and its atomic status effect. Every reopen requires authorised actor, reason, expected_revision, one atomic state change and audit event.
+
 JJSA ambiguity EX-02: completing all active follow-ups on closure versus explicit cancellation is not fully specified. Proposed close/resolve payload includes active_follow_up_disposition ({action:complete,outcome?:string up to 1000 code points}); close/resolve rejects while an open next action remains unless explicit disposition is accepted in the same transaction. No silent completion/cancellation.
 JJSA ambiguity EX-03: historical next-action redesignation and removal/unassignment of an open follow-up require final product rules. Propose no silent deletion: complete old action before creating a replacement, except reschedule preserves identity.
 
@@ -287,13 +288,44 @@ Backup/recovery: versioned schema/configuration, encrypted authorised export whe
 | Auth/session | Pending AY | Section 7 permission design/sign-in method |
 | Assignment | Aligned with JJSA V1.0; Pending P-03 | Section 9 defaults/reassignment |
 | Follow-up | Exception | Section 9 EX-02/03 and past-date proposal to JJSA |
-| Status | Exception / Pending P-04 | Separate operational + qualification; historic frontend proposals need crosswalk |
+| Status | Exception / Pending P-04 | AY technical compatibility accepted conditionally; EX-01 awaits JJSA amendment and P-04 approval |
 | Concurrent edits | Aligned structurally | expected_revision, transaction and 409 response |
 | Reporting | Aligned structurally; Pending review | Section 10 exact metric names; no optional filters yet |
 | Privacy/abuse | Pending | P-02, approved runtime controls and secure environment |
 | Notifications | Aligned | Durable internal queue/indicator; no external delivery promise |
 
 Aligned structurally is AY1's document comparison only, NOT AAY1 joint sign-off, AY acceptance, frozen schema or passed runtime evidence.
+
+### 12.1 Exact interface-state examples for AAY1
+
+All values below are synthetic documentation fixtures. Each error uses the Section 6 envelope and supported contract_version. request_id values are non-sensitive placeholders. These examples are not executed responses.
+
+| State / fixture | HTTP | Exact error fields or success discriminator | Expected frontend action |
+| --- | --- | --- | --- |
+| Invalid input SYN-02 | 422 | code=VALIDATION_FAILED; message=Check the highlighted fields.; field_errors.email=[{code:INVALID_EMAIL,message:Enter a valid email address.}]; retry=correct_input | Linked error and focus; retain safe values |
+| Inactive category SYN-02 | 422 | code=CATEGORY_UNAVAILABLE; message=Choose an available enquiry category.; field_errors.service_category_id=[{code:UNAVAILABLE,message:Choose an available enquiry category.}]; retry=correct_input | Refresh category configuration without silent submission |
+| Replay SYN-04 | 200 | Section 5 success JSON, replayed=true, identical receipt.reference and received_at | Display original receipt |
+| Uncertain outcome SYN-05 | 503 | code=RECEIPT_UNCONFIRMED; message=We cannot yet confirm receipt.; retry=same_attempt | Preserve original attempt; same-payload retry only |
+| Rate limit SYN-05 | 429 | code=RATE_LIMITED; message=Please wait before trying again.; retry=wait_then_same_attempt; Retry-After:60 | Announce delay; same valid attempt after wait |
+| Unavailable SYN-05 | 503 | code=SERVICE_UNAVAILABLE; message=We cannot yet confirm receipt.; retry=same_attempt | Never infer non-persistence |
+| Changed payload SYN-06 | 409 | code=IDEMPOTENCY_CONFLICT; message=This submission attempt does not match the original request.; retry=manual_recovery | No automatic new key |
+| Expired attempt SYN-06 | 410 | code=SUBMISSION_ATTEMPT_EXPIRED; message=This attempt has expired. Receipt is unconfirmed.; retry=manual_recovery | Approved contact/recovery; no automatic new attempt |
+| Expired session SYN-07 | 401 | code=SESSION_EXPIRED; message=Sign in to continue.; retry=sign_in | Clear private display/cache |
+| Forbidden SYN-07 | 403 | code=ACCESS_DENIED; message=You do not have access.; retry=none | Explicit denied view |
+| Stale revision SYN-08 | 409 | code=REVISION_CONFLICT; message=This record has changed. Review the latest version.; retry=refresh_record | Retain edits; re-fetch authorised detail |
+| Terminal active action SYN-09 | 409 | code=FOLLOW_UP_CONFLICT; message=Resolve the active follow-up before changing this status.; retry=refresh_record | No silent completion; EX-02 pending |
+
+Approved safe return navigation: same-origin allowlisted internal route identifiers only; never accept an arbitrary external return URL. Session refresh uses the selected Supabase SSR/session integration, with server identity validation and membership recheck; do not treat a locally cached session object as authorisation. Exact sign-in integration remains AY ratification pending.
+
+Bounded mutation examples (request bodies; operation header required):
+- Assign synthetic approved principal ID: {owner_id:"synthetic-principal-a",expected_revision:1,reason:"Synthetic assignment"}.
+- Set qualification: {qualification:"qualified",rationale:"Synthetic eligibility review",expected_revision:2}.
+- Create follow-up: {owner_id:"synthetic-principal-a",summary:"Review synthetic enquiry",due_date:"2026-11-09",expected_revision:3}.
+- Complete follow-up: {outcome:"Synthetic follow-up completed",expected_revision:4}.
+- Close with explicit active action completion, proposed EX-02 only: {target_status:"closed",reason:"Synthetic closure",active_follow_up_disposition:{action:"complete",outcome:"Synthetic completion"},expected_revision:5}. Do not freeze this shape until JJSA resolves EX-02.
+- Reopen owned/unowned: target_status respectively in_progress/new, reason and expected_revision required; these are AY's recommended EX-01 correction, awaiting JJSA amendment.
+
+WAT boundary fixture: 2026-11-08T22:59:59Z is 8 November 23:59:59 WAT; 2026-11-08T23:00:00Z is 9 November 00:00:00 WAT. An open follow-up due 2026-11-08 changes from due-today to overdue at that boundary. new_today counts use the half-open UTC window corresponding to that WAT calendar day. The Section 10 example is as at 13:00 WAT with one new unassigned lead.
 
 ## 13. Required test inventory (all NOT EXECUTED)
 
@@ -320,4 +352,6 @@ Evidence must identify actual source SHA, test/runtime/configuration without sec
 - No Supabase organisation/project selection is inferred from this documentation assignment.
 - G-00 Release to Code and production release remain HOLD. This is a versioned preparation deliverable only.
 
-Change log: V0.1 initial AY1 shared API proposal, based on received JJSA V1.0 and accepted AAY1 matrix. No application implementation.
+Change log: V0.1.1 incorporates AY's conditional compatibility ruling and recommended reopen correction, AAY1 reconciliation at 79a752e, proposed attempt lifetimes and interface-state examples. Prior V0.1 at 9eb3eaabddbee473af934017d77364292f47af31 remains the historical first delivery; it is no longer accurate to classify AY1's API artifact as undelivered.
+
+V0.1 initial AY1 shared API proposal, based on received JJSA V1.0 and accepted AAY1 matrix. No application implementation.
