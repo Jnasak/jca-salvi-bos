@@ -73,6 +73,59 @@ Additional bounded exception: V1.0 section 5 allows reopening resolved records, 
 Classification: partial product/frontend reconciliation completed; joint product/API/frontend contract freeze NOT COMPLETE.
 Next owner handback: AY1 versioned API contract referencing this exact product SHA, including examples for field errors, category activation, receipt replay, uncertain outcome, auth expiry, stale update, status/qualification, follow-up closure and reporting. JJSA resolves P-04 and bounded semantic exceptions; AY rules on compatibility. P-01/P-02/P-03 remain separately owned approvals, not reopened DEC-12 scope.
 
+
+### 1.2 Cross-contract reconciliation — 8 November 2026, 13:40 WAT
+
+This subsection supersedes the API-delivery-pending findings in 1.1 and the historical pending-receipt wording elsewhere in this document. It does not change the accepted component backlog or define another API.
+Product: V1.0 at b37c6035a15381f77a56c103038baa773cede892, docs/product/r1a-enq-01-product-contract-v1.0.md.
+API: [AY1 Shared Backend/API Contract V0.1](https://github.com/Jnasak/jca-salvi-bos/blob/9eb3eaabddbee473af934017d77364292f47af31/docs/backend/r1a-enq-01-api-contract-v0.1.md), commit 9eb3eaabddbee473af934017d77364292f47af31, branch feature/r1a-enq-backend.
+Frontend consumer baseline: this document at 79a752e51de62e3d1e7c57863dada6102023ae5f.
+AY's Product Contract V1.0 Technical Review (8 November) accepts model compatibility conditionally, retains JJSA semantic correction/P-04, and has NOT issued Gate 0.
+API V0.1 section 1 references frontend e44e3d6: valid original consumer baseline; AY1 should additionally reference 79a752e and this reconciliation on its next revision.
+
+Classification below is static document alignment, not runtime validation, joint contract freeze or business-policy approval.
+
+| Area | Classification | Exact contract reference and frontend disposition |
+| --- | --- | --- |
+| Fields | Aligned structurally; Pending JJSA technical-detail review | Product section 2; API section 4 request table and synthetic body. Seven snake_case keys, single category, optional organisation, true acknowledgement. NFC/code-point lengths, separator rules/body guard require JJSA compatibility review. Native UTF-16 maxlength alone cannot enforce Unicode code-point limits |
+| Categories | Aligned structurally; Pending P-01 | Product section 3; API section 3 config schema and section 6 CATEGORY_UNAVAILABLE. Consume id/label active list in server order; empty/unavailable config disables submission. general_enquiry is synthetic only |
+| Public request | Aligned; Pending AY T-01 parameters | API sections 2–4: GET /api/enquiry-config, POST /api/enquiries, contract/notice headers and signed attempt token. Keep token/draft in memory; freeze logical attempt once submit starts. TTL/abuse configuration still requires AY |
+| Confirmed receipt | Aligned | Product section 8; API section 5 success JSON. Require HTTP 200/201, ok=true, supported version, well-formed reference/received_at and boolean replayed. Display safe receipt only; no CRM UUID. No UI success on arbitrary ok=true |
+| Validation/rejection | Aligned; Pending complete example set | API section 6 error JSON/table and retry enum. Bind field_errors to shared keys and safe copy; map general/integration errors to error summary. Existing concrete JSON example covers email; remaining state examples need bounded completion |
+| Duplicate/unknown | Aligned behaviour; Pending TTL/retention approval | API sections 3/5/6. Retain same signed attempt for retry; replay returns original receipt. 409 mismatch, 410 expiry/unavailable receipt and unknown outcome never trigger automatic new attempt. 429 waits Retry-After but expired attempt requires manual recovery. No public lookup endpoint |
+| Auth/session | Aligned envelopes; Pending AY/P-03 | API sections 7/8: session/logout envelopes, 401 versus 403, no-store and revoked membership checks. Email/password method proposed, not ratified. No public internal registration. Clear private view/cache on expiry; no user-editable metadata used as authority |
+| Assignment | Exception FEX-01; Pending P-03 | Product section 4; API sections 8/9. Owner mutation expects approved UUID but no documented response supplies the complete assignable-principal list to owner/follow-up selectors. AY1 must identify an authorised source; frontend must not hardcode IDs or infer second principal from display names |
+| Follow-up | Exception EX-02/EX-03; Pending JJSA | Product section 6; API section 9. Date-only WAT, one active next action, complete/reschedule shape align. Terminal active-action disposition, replacement/removal rules and permissibility of past dates remain explicit proposals; UI must not silently complete/delete |
+| Status/qualification | Exception EX-01/FEX-02; Pending correction and P-04 | Product section 5; API section 9. AY conditionally accepts separate operational/qualification model. API still proposes resolved-owner invariant and resolved→in_progress only. Await JJSA versioned decision for owned/unowned reopen and owner clearing; no independent frontend transitions |
+| Concurrent edits | Aligned | API section 8 mutation envelope/revision rules and section 6 conflicts. Send expected_revision plus distinct X-BOS-Operation-Key per logical internal edit. Retain key on retry; authorisation checked on replay. Re-fetch/reconcile on real stale conflict; do not retry under new key automatically |
+| Reporting | Aligned | Product section 7; API section 10 complete reporting JSON. Consume ten named metrics plus as_of/timezone/wat_date/scope; no optional report filters in V0.1. New-today versus as-of totals and action versus enquiry counts remain distinct. Later queue reads need not be the same snapshot |
+| Privacy/abuse | Pending public-enablement/technical controls | Product P-02; API sections 3/4/6/7/11/14. AY reports D1–D3 governance approved with controls; actual approved notice/version still outstanding. Token/digest/internal-operation retention, abuse mechanism and protected environment need AY disposition. Do not use config placeholders as legal notice |
+| Notifications | Aligned | Product section 8; API sections 5/10/12. Durable queue/summary indication suffices; notification failure does not undo persisted receipt. No external messaging introduced |
+
+#### Bounded exceptions and missing examples
+
+- EX-01 / JJSA: confirm reopening resolved/closed with owner→in_progress, without owner→new, as AY recommends; specify whether/when terminal ownership may be cleared. API V0.1's proposed invariant is not an approved substitute. Mutation requires authorised actor, reason, expected revision, atomic state/audit.
+- EX-02 / JJSA: decide explicit handling of an active follow-up when resolving/closing. API proposes same-transaction completion disposition; frontend must await confirmation.
+- EX-03 / JJSA: replacement/removal of next action, completed-action handling and past-date allowance need bounded confirmation.
+- FEX-01 / AY1: supply authorised assignable-principal source for both owner selectors (FE-05/06); no new endpoint is prescribed by AAY1.
+- FEX-02 / AY1 + JJSA: allowed_actions lists action names, not target-state choices or conditional input requirements. Supply authoritative transition/reason/disposition metadata OR reference an exact frozen transition matrix for client presentation, while retaining server enforcement. FE-06 cannot infer this from action names alone.
+- FEX-03 / AY1: complete minimal synthetic examples for config, list/detail, session, successful mutation, 409 revision conflict, replay, 410 expiry, 429, 401/403 and 503 uncertain outcome. V0.1 already supplies concrete public request, success receipt, validation error and reporting JSON; internal type/envelope descriptions are useful but not a full reproducible example set.
+- Technical-detail review / JJSA + AY1: ratify NFC/code-point interpretation, phone separators/control-character policy and proposed reason/rationale limits. Frontend validation must match backend normalization exactly.
+
+#### P-01–P-04 disposition
+
+| Gate | Updated disposition |
+| --- | --- |
+| P-01 | Public category wording pending principals; synthetic category remains test-only |
+| P-02 | D1–D3 governance approved with controls per AY; actual notice/version and detailed retention/runtime implementation still require proper approval |
+| P-03 | Initial two-principal membership approved; precise shared permissions/assignment matrix pending ratification |
+| P-04 | Status/qualification model technically compatible per AY; JJSA bounded correction and required business-policy approval pending |
+
+FE/UX impact: FE-01 layout/control preparation unchanged; FE-02 depends on approved category/notice and compatible constraints; FE-03 has consumable proposed response semantics but runtime parameters/recovery review remain; FE-04 needs ratified auth/session setup; FE-05/06 require FEX-01/02 and EX-01/02/03 dispositions; FE-07 reporting is structurally consumable with V0.1 scope; FE-08 waits Gate 0 and executable candidate.
+UX-01–UX-11 coverage remains unchanged; API-01–10 and ENQ-T01–13 provide additional evidence links. All tests NOT EXECUTED.
+
+Disposition: product + API delivery blockers closed. Cross-contract static review completed with the exceptions above; NOT a frozen contract. Next: JJSA versioned semantic correction, AY1 bounded contract/example revision, then AY cross-contract ruling. Branch governance/local environment and explicit Release to Code remain separate conditions. No application implementation or deployment is included.
+
 ## 2. Component backlog and implementation order
 
 Routes below are semantic views, not independently assigned URL paths. UX specification is retained rather than redesigned.
