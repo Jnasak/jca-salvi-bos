@@ -1,4 +1,4 @@
-# R1A-ENQ-01 — Shared Backend/API Contract V0.1.1
+# R1A-ENQ-01 — Shared Backend/API Contract V0.1.2
 
 Date: 8 November 2026 (WAT)
 Owner: AY1 — Technical Implementation & Integration
@@ -9,6 +9,7 @@ Parent source-control baseline: 300cc7faa372a20ba3b3adfe282891aa73886ecc.
 ## 1. Exact governing references and precedence
 
 - Product: docs/product/r1a-enq-01-product-contract-v1.0.md at b37c6035a15381f77a56c103038baa773cede892, on docs/r1a-enq-product-contract.
+- Product amendment: docs/product/r1a-enq-01-status-reopen-amendment-v1.0.1.md at c11023032dbda84de801cb44bf50320fe4ab98c4; supersedes conflicting V1.0 sections 4–5 reopen/ownership rules only. Product semantic exception resolved; P-04 business approval remains pending.
 - Frontend consumer matrix: docs/frontend/r1a-enq-01-integration-readiness.md, Section 1, at e44e3d690c82cbf5d371931e92347241dc7849ec; product reconciliation update Section 1.1 at 79a752e51de62e3d1e7c57863dada6102023ae5f.
 - PRD V1.3-R1, R1A-ENQ-01 V0.1 and DEC-12 retain parent scope/traceability.
 - Approved platform: Next.js, TypeScript, Vercel, Supabase Auth and PostgreSQL; separate principal identities.
@@ -16,7 +17,7 @@ Parent source-control baseline: 300cc7faa372a20ba3b3adfe282891aa73886ecc.
 
 JJSA V1.0 is now received: it replaces earlier missing-contract findings. Its detailed rules are specified for reconciliation, with P-01 through P-04 approval dependencies preserved. AY1 owns proposed wire names, HTTP semantics and implementation contracts. AY retains final compatibility/security ruling and explicit G-00 Release to Code.
 
-All engineering choices below are proposed V0.1.1 until AY rules. No unrelated services, portal, finance, project conversion or external messaging are added.
+All engineering choices below are proposed V0.1.2 until AY rules. No unrelated services, portal, finance, project conversion or external messaging are added.
 
 ## 2. Shared wire conventions
 
@@ -222,12 +223,22 @@ Operational enum: new, assigned, in_progress, resolved, closed.
 Qualification enum: unassessed, qualified, not_qualified, hold.
 These are JJSA V1.0 semantics pending P-04/AY compatibility ruling; do not use historic overloaded labels as interchangeable enums.
 
-V1.0 transition list (not frozen; EX-01 supersedes the proposed resolved invariant): new→assigned/closed; assigned→in_progress/closed; in_progress→resolved/closed; resolved→in_progress; closed→in_progress if owned, otherwise new. Assignment new→assigned is atomic with owner change. Reassignment while assigned/in_progress preserves operational status. Clearing owner while open returns to new with reason. Assignment of terminal records is rejected until reopened.
+Corrected product rules — V1.0 plus JJSA V1.0.1 at c11023032dbda84de801cb44bf50320fe4ab98c4:
+- new→assigned requires named owner, atomic with assignment; new→closed permits unassigned owner with closure reason.
+- assigned→in_progress/closed; in_progress→resolved/closed. Normal resolution requires named owner and disposition; terminal transitions retain named owners.
+- Resolved/closed with named owner reopen to in_progress, retaining that owner. Unassigned closed reopens to new. Unassigned resolved→new is defensive legacy recovery only, never a permitted newly created normal resolved state.
+- Both assigned and in_progress always require an owner. No automatic assignment, follow-up creation or resurrection on reopen.
+- Direct owner clearing on resolved/closed is rejected. Reopen with retained owner first, then explicitly deassign in a separate revisioned/audited operation.
+- Open assigned/in_progress owner clearing requires reason and expected_revision; one atomic mutation sets owner=null/status=new and writes audit. Reject while an unresolved active follow-up exists; no ownerless/orphan follow-up.
+- Open JCA↔Salvi reassignment preserves valid status, subject to approved next-action ownership compatibility. No owner edit may bypass status checks.
+- Terminal status cannot coexist with an open follow-up. Reopening never creates a due date; an owned reopened lead without an active action contributes needs_follow_up_planning; an unassigned reopened lead appears in triage.
+- All mutations validate actor, membership and revision inside the same transaction. Reopen writes owner/status/revision and one audit event atomically; no intermediate ownerless in_progress.
 
-Status exception EX-01 — AY compatibility ruling received on 8 November 2026: separation of operational status/qualification is technically compatible with DEC-12, subject to bounded JJSA correction and P-04 business approval. AY recommends resolved or closed → in_progress when owned, and → new when unassigned. This supersedes AY1's earlier suggestion to require owner retention on all resolved records. It is a recommended correction awaiting JJSA's versioned amendment, not an approved extension to V1.0. The V1.0 resolved→in_progress-only list remains a documented contradiction; do not implement either interpretation until reconciled. JJSA must also specify when a resolved record may lose ownership and its atomic status effect. Every reopen requires authorised actor, reason, expected_revision, one atomic state change and audit event.
+EX-01 disposition: RESOLVED at product-specification level by V1.0.1. The earlier AY1 owner-retention-only proposal and V1.0 resolved→in_progress-only list are superseded. AY cross-contract ruling and P-04 business-policy approval are still pending.
 
-JJSA ambiguity EX-02: completing all active follow-ups on closure versus explicit cancellation is not fully specified. Proposed close/resolve payload includes active_follow_up_disposition ({action:complete,outcome?:string up to 1000 code points}); close/resolve rejects while an open next action remains unless explicit disposition is accepted in the same transaction. No silent completion/cancellation.
-JJSA ambiguity EX-03: historical next-action redesignation and removal/unassignment of an open follow-up require final product rules. Propose no silent deletion: complete old action before creating a replacement, except reschedule preserves identity.
+EX-02 remaining bounded engineering choice: explicit terminal follow-up disposition is mandatory under V1.0.1, but exact cancellation/completion semantics are not frozen. Proposed payload active_follow_up_disposition={action:complete,outcome?:string up to 1000 code points}, preserving history. Reject terminal transition while an open action remains unless the approved disposition is included atomically. No silent completion/cancellation. Cancellation requires a reviewed contract amendment; no cancel endpoint is defined here.
+
+EX-03 remaining bounded engineering choice: V1.0.1 resolves terminal owner clearing and open-case status reset. For this proposal reject open deassignment while ANY active follow-up remains (409 FOLLOW_UP_CONFLICT); complete the action through the approved operation first. A future transactional reassign/cancel variant requires explicit review. Historical next-action redesignation remains no silent deletion; rescheduling preserves identity. This is a safe proposed restriction, not a claim that JJSA approved all engineering payloads.
 
 At most one open next-action follow-up per lead, enforced in database. Each follow-up belongs to the same workspace/lead and an approved member. due_date stays date-only; completed_at/actor are server timestamps. Reject impossible calendar dates. Past dates are permitted for faithful tracking with an overdue indicator; this is an engineering proposal requiring JJSA confirmation.
 
@@ -287,8 +298,8 @@ Backup/recovery: versioned schema/configuration, encrypted authorised export whe
 | Duplicate/unknown | Proposed T-01; Pending retention | Section 5; same-attempt replay, explicit expiry, no public lookup |
 | Auth/session | Pending AY | Section 7 permission design/sign-in method |
 | Assignment | Aligned with JJSA V1.0; Pending P-03 | Section 9 defaults/reassignment |
-| Follow-up | Exception | Section 9 EX-02/03 and past-date proposal to JJSA |
-| Status | Exception / Pending P-04 | AY technical compatibility accepted conditionally; EX-01 awaits JJSA amendment and P-04 approval |
+| Follow-up | Exception | V1.0.1 follow-up invariants incorporated; EX-02/03 payload restrictions and past-date proposal remain pending |
+| Status | Exception / Pending P-04 | EX-01 product contradiction resolved by c110230; P-04 and AY cross-contract ruling pending |
 | Concurrent edits | Aligned structurally | expected_revision, transaction and 409 response |
 | Reporting | Aligned structurally; Pending review | Section 10 exact metric names; no optional filters yet |
 | Privacy/abuse | Pending | P-02, approved runtime controls and secure environment |
@@ -323,9 +334,78 @@ Bounded mutation examples (request bodies; operation header required):
 - Create follow-up: {owner_id:"synthetic-principal-a",summary:"Review synthetic enquiry",due_date:"2026-11-09",expected_revision:3}.
 - Complete follow-up: {outcome:"Synthetic follow-up completed",expected_revision:4}.
 - Close with explicit active action completion, proposed EX-02 only: {target_status:"closed",reason:"Synthetic closure",active_follow_up_disposition:{action:"complete",outcome:"Synthetic completion"},expected_revision:5}. Do not freeze this shape until JJSA resolves EX-02.
-- Reopen owned/unowned: target_status respectively in_progress/new, reason and expected_revision required; these are AY's recommended EX-01 correction, awaiting JJSA amendment.
+- Reopen owned/unowned: target_status respectively in_progress/new, reason and expected_revision required; these follow JJSA V1.0.1; unassigned resolved is legacy-only. P-04 and AY cross-contract ruling remain pending.
 
 WAT boundary fixture: 2026-11-08T22:59:59Z is 8 November 23:59:59 WAT; 2026-11-08T23:00:00Z is 9 November 00:00:00 WAT. An open follow-up due 2026-11-08 changes from due-today to overdue at that boundary. new_today counts use the half-open UTC window corresponding to that WAT calendar day. The Section 10 example is as at 13:00 WAT with one new unassigned lead.
+
+### 12.2 V1.0.1 reopen/deassignment request and response fixtures
+
+Contract version remains r1a-enq-api-v0.1 during documentation reconciliation; document revision is V0.1.2. No released consumer schema exists. All operation examples use Content-Type application/json, X-BOS-Contract-Version, X-BOS-Operation-Key and a verified internal session. Keys and IDs below are synthetic placeholders, not credentials. reason is trim/NFC, 3–500 code points as the proposed Section 9 engineering limit; JJSA requires nonblank. expected_revision must be a positive integer: missing/invalid is 422, present-but-stale is 409. Neither rejection changes state.
+
+Reopen request: POST /api/internal/leads/synthetic-lead-a/transitions
+Body: {"target_status":"in_progress","reason":"Synthetic reopening review","expected_revision":7}.
+Precondition: owned resolved lead at revision 7, no active follow-up; actor has approved workspace permission. Result: same owner, in_progress, revision 8; qualification unchanged; exactly one reopen event. Example full success envelope:
+
+```json
+{
+  "ok": true,
+  "contract_version": "r1a-enq-api-v0.1",
+  "data": {
+    "lead": {
+      "id": "synthetic-lead-a",
+      "receipt_reference": "BOS-SYNTHETIC-RECEIPT-A",
+      "received_at": "2026-11-08T12:00:00Z",
+      "full_name": "Sample Prospect A",
+      "email": "prospect-a@example.test",
+      "phone": "0000000000",
+      "organisation_name": null,
+      "service_category_id": "general_enquiry",
+      "category_label_at_submission": "General business enquiry",
+      "description": "Synthetic enquiry for integration testing only.",
+      "owner": {"id":"synthetic-principal-a","display_name":"Synthetic Principal A"},
+      "operational_status": "in_progress",
+      "qualification": {"value":"unassessed","rationale":null,"reviewed_by":null,"reviewed_at":null},
+      "revision": 8,
+      "updated_at": "2026-11-08T12:50:00Z",
+      "active_follow_up": null,
+      "capabilities": ["assign_owner","transition_status","set_qualification","create_follow_up"],
+      "allowed_actions": ["assign_owner","transition_status","set_qualification","create_follow_up"]
+    }
+  },
+  "replayed": false,
+  "meta": {"as_of":"2026-11-08T12:50:00Z","timezone":"Africa/Lagos","scope":"authorised_bos_workspace"}
+}
+```
+
+The fixture category is test-only. An identical operation replay returns the same original envelope with replayed=true; no second revision/event. meta.as_of remains that original result snapshot. Subsequent detail/report requests have their own as_of. For unassigned closed and legacy unassigned resolved, request target_status=new; successful lead retains owner=null, operational_status=new, increments revision once and creates no follow-up.
+
+Validation example — HTTP 422, blank reason (invalid revision adds expected_revision field error):
+
+```json
+{"ok":false,"contract_version":"r1a-enq-api-v0.1","error":{"code":"VALIDATION_FAILED","message":"Check the highlighted fields.","field_errors":{"reason":[{"code":"REQUIRED","message":"Enter a reason."}]},"request_id":"synthetic-validation-a","retry":"correct_input"}}
+```
+
+Conflict example — HTTP 409, expected_revision=7 but persisted revision=8:
+
+```json
+{"ok":false,"contract_version":"r1a-enq-api-v0.1","error":{"code":"REVISION_CONFLICT","message":"This record has changed. Review the latest version.","request_id":"synthetic-conflict-a","retry":"refresh_record"}}
+```
+
+Unauthorised-action example — HTTP 403, verified identity without active approved workspace permission:
+
+```json
+{"ok":false,"contract_version":"r1a-enq-api-v0.1","error":{"code":"ACCESS_DENIED","message":"You do not have access.","request_id":"synthetic-denied-a","retry":"none"}}
+```
+
+Public/no session uses HTTP 401 AUTH_REQUIRED; expired session uses 401 SESSION_EXPIRED. An otherwise authorised member requesting an absent/out-of-scope record receives the non-enumerating 404 NOT_FOUND. None returns protected lead/revision/history data.
+
+Additional deterministic negative responses (same envelope; no mutation):
+- Wrong target for current ownership, illegal terminal owner-clear or resolved owner edit: HTTP 409 TRANSITION_NOT_ALLOWED, message="This action is not permitted in the current state.", retry=refresh_record. A terminal owner-clear is not silently converted to reopen.
+- Open deassignment with unresolved active follow-up, or terminal transition with no approved disposition: HTTP 409 FOLLOW_UP_CONFLICT, Section 12.1 copy, retry=refresh_record.
+- Changed payload/route under the same operation key: HTTP 409 IDEMPOTENCY_CONFLICT, retry=manual_recovery.
+- Two independently keyed simultaneous reopens with revision 7: one may succeed to revision 8; the other returns REVISION_CONFLICT. Two identical requests under one operation key return one result and replay, with exactly one event.
+
+Owned terminal deassignment sequence fixture: reopen at revision 7→8 retaining owner, then PATCH owner with {owner_id:null,reason:"Synthetic deassignment",expected_revision:8}; if no active action, result revision 9, owner=null/status=new and a separate owner-clear event. Never combine the two user decisions silently.
 
 ## 13. Required test inventory (all NOT EXECUTED)
 
@@ -333,7 +413,8 @@ WAT boundary fixture: 2026-11-08T22:59:59Z is 8 November 23:59:59 WAT; 2026-11-0
 - API-02 / ENQ-T03/04: valid transaction commits all required records; injected audit/digest/lead failure rolls back; timeout and malformed success never cause false confirmation.
 - API-03 / ENQ-T05: simultaneous identical submissions, response-loss retry, changed payload, token tamper/expiry, transaction retry, mapping purge; one lead/event for one logical attempt.
 - API-04 / ENQ-T06/07: no session, outsider, revoked membership, guessed UUID, direct Data API, forged membership, browser key, cross-workspace and cached-response isolation.
-- API-05 / ENQ-T08: legal/illegal owner, qualification, status transition, missing reason/disposition, duplicate mutation, stale version and immutable history.
+- API-05 / ENQ-T08: legal/illegal owner, qualification, status transition, missing reason and any required disposition, duplicate mutation, stale version and immutable history.
+- API-05A / V1.0.1 Sections 1–5: all four terminal/owner reopen combinations, legacy-only unassigned resolved, blank reason, missing/invalid/stale revision, public/outsider/revoked user, direct terminal owner clear, open deassignment blocked by active action, distinct-key concurrent reopen, identical-key replay, unchanged qualification and no automatic follow-up. Verify one state revision/event per successful logical operation and resulting triage/planning metrics. NOT EXECUTED.
 - API-06 / ENQ-T09: one active follow-up constraint, reschedule/complete, terminal record contradiction, WAT midnight/Sunday-Monday and valid date-only rules.
 - API-07 / ENQ-T10: reproduce exact metrics from fixtures; historical actions do not inflate leads; authorised scope and zero-state.
 - API-08 / ENQ-T11 + UX-01–11: AAY1 shared valid/error/replay/expired/rate-limited/auth/conflict examples and no private-data flash.
@@ -344,7 +425,7 @@ Evidence must identify actual source SHA, test/runtime/configuration without sec
 
 ## 14. Open decisions and exact next action
 
-- JJSA: review technical normalisation/limits and EX-01/02/03; return approval or bounded amendments. Product V1.0 exists at the exact source above; no substitute product contract is required.
+- JJSA: review technical normalisation/limits and remaining EX-02/03 engineering choices; return approval or bounded amendments. Product V1.0 exists at the exact source above; no substitute product contract is required.
 - JCA/Salvi + AY: resolve P-01 category wording, P-02 notice/retention, P-03 cross-principal sharing, P-04 material status rules at the required build/release stage.
 - AY: ratify T-01 endpoint/envelope/token/revision/auth/security design, identity provisioning approach, token/digest lifetimes and abuse controls.
 - AAY1: reconcile each Section 1 row against this version and JJSA V1.0; record Aligned/Exception/Pending with exact sources.
@@ -352,6 +433,8 @@ Evidence must identify actual source SHA, test/runtime/configuration without sec
 - No Supabase organisation/project selection is inferred from this documentation assignment.
 - G-00 Release to Code and production release remain HOLD. This is a versioned preparation deliverable only.
 
-Change log: V0.1.1 incorporates AY's conditional compatibility ruling and recommended reopen correction, AAY1 reconciliation at 79a752e, proposed attempt lifetimes and interface-state examples. Prior V0.1 at 9eb3eaabddbee473af934017d77364292f47af31 remains the historical first delivery; it is no longer accurate to classify AY1's API artifact as undelivered.
+Change log: V0.1.2 incorporates JJSA V1.0.1 at c110230, resolves EX-01 at product level, applies owner-clear/follow-up invariants, and supplies reopen success/validation/conflict/permission examples. P-04, AY compatibility ruling and Gate 0 remain pending.
+
+V0.1.1 incorporates AY's conditional compatibility ruling and recommended reopen correction, AAY1 reconciliation at 79a752e, proposed attempt lifetimes and interface-state examples. Prior V0.1 at 9eb3eaabddbee473af934017d77364292f47af31 remains the historical first delivery; it is no longer accurate to classify AY1's API artifact as undelivered.
 
 V0.1 initial AY1 shared API proposal, based on received JJSA V1.0 and accepted AAY1 matrix. No application implementation.
